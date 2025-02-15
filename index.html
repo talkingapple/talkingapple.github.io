@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdownエディタ</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -116,6 +115,20 @@
     #convertBtn:hover {
       background-color: #45a049;
     }
+    #editBtn {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #f44336;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    #editBtn:hover {
+      background-color: #da190b;
+    }
+    
   </style>
 </head>
 <body>
@@ -170,6 +183,24 @@
       });
       input.click();
     }
+
+    document.getElementById('convertBtn').addEventListener('click', function() {
+      const markdownText = textarea.value;
+      const htmlContent = marked.parse(markdownText);
+      preview.innerHTML = htmlContent;
+      preview.style.display = 'block';
+      textarea.style.display = 'none';
+      document.getElementById('editBtn').style.display = 'inline';
+      document.getElementById('convertBtn').style.display = 'none';
+    });
+
+    document.getElementById('editBtn').addEventListener('click', function() {
+      preview.style.display = 'none';
+      textarea.style.display = 'block';
+      document.getElementById('editBtn').style.display = 'none';
+      document.getElementById('convertBtn').style.display = 'inline';
+    });
+
   </script>
 </body>
 </html>
