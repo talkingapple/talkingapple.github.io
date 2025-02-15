@@ -167,6 +167,24 @@
       body.classList.toggle('light-mode');
     }
 
+    function saveFile(format) {
+      let content = format === 'md' ? textarea.value : `<!DOCTYPE html><html><body>${marked.parse(textarea.value)}</body></html>`;
+      let blob = new Blob([content], { type: format === 'md' ? 'text/markdown' : 'text/html' });
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = format === 'md' ? 'document.md' : 'document.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function savePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text(textarea.value, 10, 10);
+      doc.save('document.pdf');
+    }
+    
     function openFile() {
       const input = document.createElement('input');
       input.type = 'file';
