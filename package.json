@@ -1,5 +1,6 @@
 {
   "name": "prioria",
+  "homepage": "https://talkingapple.github.io/",
   "private": true,
   "version": "0.0.0",
   "main": "electron/main.cjs",
@@ -9,7 +10,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"wait-on tcp:3000 && electron .\"",
-    "electron:build": "vite build && electron-builder"
+    "electron:build": "vite build && electron-builder",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "lucide-react": "^0.562.0",
@@ -23,6 +26,7 @@
     "cross-env": "^7.0.3",
     "electron": "^40.0.0",
     "electron-builder": "^26.4.0",
+    "gh-pages": "^6.3.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "wait-on": "^8.0.5"
