@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdownエディタ</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #2c2c2c;
+      color: #f5f5f5;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .light-mode {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    .light-mode textarea, .light-mode #preview {
+      background-color: #f5f5f5;
+      color: #000000;
+      border: 1px solid #ddd;
+    }
+    .sidebar {
+      width: 200px;
+      background-color: #1e1e1e;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, width 0.3s ease;
+    }
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+    .sidebar button {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #444;
+      color: white;
+    }
+    .sidebar button:hover {
+      background-color: #555;
+    }
+    .toggle-sidebar {
+      position: absolute;
+      left: 220px;
+      top: 10px;
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: left 0.3s ease;
+    }
+    .toggle-sidebar:hover {
+      background-color: #555;
+    }
+    .toggle-sidebar::before {
+      content: '\2630'; /* 三本線アイコン */
+      font-size: 20px;
+    }
+    .container {
+      flex-grow: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: calc(100% - 200px);
+      transition: width 0.3s ease;
+    }
+    .container.full-width {
+      width: 100%;
+    }
+    textarea, #preview {
+      width: 100%;
+      height: 100vh;
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      background-color: #3a3a3a;
+      color: #f5f5f5;
+      resize: none;
+      box-sizing: border-box;
+    }
+    #preview {
+      background-color: #2e2e2e;
+      border: 1px solid #555;
+      display: none;
+    }
+    .buttons {
+      margin-top: 10px;
+    }
+    #convertBtn {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    #convertBtn:hover {
+      background-color: #45a049;
+    }
+    #editBtn {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #f44336;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+    #editBtn:hover {
+      background-color: #da190b;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <button onclick="saveFile('md')">Markdownとして保存</button>
+    <button onclick="saveFile('html')">HTMLとして保存</button>
+    <button onclick="savePDF()">PDFとして保存</button>
+    <button onclick="openFile()">プロジェクトを開く</button>
+    <button onclick="toggleMode()">ライト/ダークモード</button>
+  </div>
+  <button class="toggle-sidebar" id="toggleSidebar"></button>
+  <div class="container" id="mainContainer">
+    <h1>Markdownエディタ</h1>
+    <textarea id="markdown" placeholder="ここにMarkdownを入力してください..."></textarea>
+    <div id="preview"></div>
+    <div class="buttons">
+      <button id="convertBtn">変換</button>
+      <button id="editBtn" style="display: none;">編集</button>
+    </div>
+  </div>
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const mainContainer = document.getElementById('mainContainer');
+    const body = document.body;
+    const textarea = document.getElementById('markdown');
+    const preview = document.getElementById('preview');
+
+    toggleSidebar.addEventListener('click', function () {
+      sidebar.classList.toggle('hidden');
+      mainContainer.classList.toggle('full-width');
+      toggleSidebar.style.left = sidebar.classList.contains('hidden') ? '10px' : '220px';
+    });
+
+    function toggleMode() {
+      body.classList.toggle('light-mode');
+    }
+
+    function saveFile(format) {
+      let content = format === 'md' ? textarea.value : `<!DOCTYPE html><html><body>${marked.parse(textarea.value)}</body></html>`;
+      let blob = new Blob([content], { type: format === 'md' ? 'text/markdown' : 'text/html' });
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = format === 'md' ? 'document.md' : 'document.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function savePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text(textarea.value, 10, 10);
+      doc.save('document.pdf');
+    }
+    
+    function openFile() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.md';
+      input.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('markdown').value = e.target.result;
+          };
+          reader.readAsText(file);
+        }
+      });
+      input.click();
+    }
+
+    document.getElementById('convertBtn').addEventListener('click', function() {
+      const markdownText = textarea.value;
+      const htmlContent = marked.parse(markdownText);
+      preview.innerHTML = htmlContent;
+      preview.style.display = 'block';
+      textarea.style.display = 'none';
+      document.getElementById('editBtn').style.display = 'inline';
+      document.getElementById('convertBtn').style.display = 'none';
+    });
+
+    document.getElementById('editBtn').addEventListener('click', function() {
+      preview.style.display = 'none';
+      textarea.style.display = 'block';
+      document.getElementById('editBtn').style.display = 'none';
+      document.getElementById('convertBtn').style.display = 'inline';
+    });
+
+  </script>
+</body>
+</html>

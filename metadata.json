@@ -1,0 +1,7 @@
+{
+  "name": "Prioria",
+  "description": "A cognitive load optimization AI that helps students and professionals decide what to do next based on their current brain state and task difficulty.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
