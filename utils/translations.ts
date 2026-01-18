@@ -56,6 +56,7 @@ export const translations = {
 
     // BrainGauge & Gamification
     fatigue: "Fatigue Level",
+    energy: "Energy Level",
     motivation: "Motivation",
     fresh: "Fresh",
     tired: "Tired",
@@ -234,6 +235,7 @@ export const translations = {
 
     // BrainGauge & Gamification
     fatigue: "疲労度",
+    energy: "元気度",
     motivation: "やる気",
     fresh: "元気",
     tired: "疲れ気味",
